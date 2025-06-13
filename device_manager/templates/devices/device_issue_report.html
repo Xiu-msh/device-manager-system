@@ -1,0 +1,40 @@
+<!-- templates/devices/device_issue_report.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 class="mb-4">设备异常上报</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>设备信息</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>设备编号:</strong> {{ device.device_number }}</p>
+                    <p><strong>设备大类:</strong> {{ device.device_type.name }}</p>
+                    <p><strong>设备类型:</strong> {{ device.type }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>品牌/型号:</strong> {{ device.brand }} {{ device.model }}</p>
+                    <p><strong>当前状态:</strong> <span class="badge bg-warning">{{ device.get_status_display }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">异常描述</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="text-danger">{{ form.description.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">提交上报</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary ms-3">取消</a>
+        </div>
+    </form>
+{% endblock %}

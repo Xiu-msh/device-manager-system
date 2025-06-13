@@ -1,0 +1,72 @@
+<!-- templates/devices/device_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container mt-5">
+        {% if device_info %}
+        <div class="card shadow rounded-3">
+            <div class="card-header bg-primary text-white">
+                <h1 class="fs-3 mb-0">
+                    <i class="bi bi-device-vertical"></i> 设备信息
+                    {% if device_info.status.value == '正常' %}
+                         <i class="bi bi-device-vertical"></i><a href="{% url 'device_borrow' device_info.device_id %}" class="btn btn-sm btn-primary">借用</a>
+                         <i class="bi bi-device-vertical"></i><a href="{% url 'device_issue_report' device_info.device_id %}" class="btn btn-sm btn-primary">异常上报</a>
+                    {% endif %}
+                </h1>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- 基础信息列 -->
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            {% for key, info in device_info.items %}
+                                {% if key != 'details' and key != 'device_id' %}
+                                <li class="mb-3">
+                                    <span class="fw-bold text-primary">{{ info.verbose_name }}:</span>
+                                    {% if key == 'image' %}
+                                    <!-- 显示设备图片 -->
+                                    <div class="col-md-12 d-flex flex-column align-items-start">
+                                        <img src="{{ info.value }}" class="img-fluid mt-2">
+                                    </div>
+                                    {% else %}
+                                        <span class="text-muted">{{ info.value }}</span>
+                                    {% endif %}
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- 详细信息表格列 -->
+                    <div class="col-md-6">
+                        <div class="bg-light rounded-2 p-4">
+                            <h3 class="fs-5 text-primary mb-3">
+                                <i class="bi bi-list-check"></i> 详细信息
+                            </h3>
+                            <table class="table table-hover table-borderless mb-0">
+                                <tbody>
+                                {% for detail_key, detail_value in device_info.details.items %}
+                                <tr>
+                                    <th class="text-start pe-4 fw-semibold">{{ detail_key }}:</th>
+                                    <td class="text-muted">{{ detail_value }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                {% else %}
+                <div class="alert alert-danger mt-4">
+                    <i class="bi bi-exclamation-triangle"></i> 未接收到设备详细信息。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

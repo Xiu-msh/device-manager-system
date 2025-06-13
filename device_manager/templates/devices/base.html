@@ -1,0 +1,156 @@
+<!-- templates/devices/base.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>设备管理系统</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .navbar-brand {
+                font-weight: bold;
+                color: black; /* 设置导航栏品牌文字为黑色 */
+                font-size: 1.2em; /* 增大字体大小 */
+            }
+            .content {
+                min-height: calc(100vh - 120px);
+            }
+            .footer {
+                background-color: #f8f9fa;
+                padding: 20px 0;
+                text-align: center;
+            }
+            .status-badge {
+                font-size: 90%;
+                padding: 0.3em 0.6em;
+            }
+
+            /* 自定义归还时间输入框样式 */
+            input[type="datetime-local"] {
+                border: 2px solid #007bff; /* 边框颜色 */
+                border-radius: 5px; /* 边框圆角 */
+                padding: 8px 12px; /* 内边距 */
+                font-size: 16px; /* 字体大小 */
+                width: 100%; /* 宽度 */
+                box-sizing: border-box; /* 盒子模型 */
+                transition: border-color 0.3s ease; /* 过渡效果 */
+            }
+
+            input[type="datetime-local"]:focus {
+                border-color: #0056b3; /* 聚焦时边框颜色 */
+                outline: none; /* 去除默认聚焦边框 */
+            }
+
+            /* 设置导航栏链接文字为加粗黑色，增大字体大小 */
+            .navbar-nav .nav-link {
+                font-weight: bold;
+                color: black;
+                font-size: 1.5em; /* 增大字体大小 */
+            }
+
+            /* 鼠标悬停时的样式 */
+            .navbar-nav .nav-link:hover {
+                background-color: lightgray; /* 鼠标悬停时的背景颜色 */
+                color: darkblue; /* 鼠标悬停时的文字颜色 */
+            }
+
+        </style>
+    </head>
+    <body>
+    <!-- 导航栏 -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <!-- 根据用户是否登录显示不同内容 -->
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">我的</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">首页</a>
+                        </li>
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'device_query' %}">设备查询</a>
+                        </li>
+                        <!-- 新增后台按钮 -->
+                        <li class="nav-item">
+                            {% if user.is_superuser %}
+                            <a class="nav-link" href="{% url 'admin:index' %}">后台</a>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <ul class="navbar-nav">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">欢迎，{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">退出登录</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">登录</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">注册</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主要内容 -->
+        <div class="container content">
+            <!-- 消息提示 -->
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- 全局错误提示 -->
+            {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <p>表单存在以下错误，请检查：</p>
+                <ul>
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- 页面内容 -->
+            {% block content %}{% endblock %}
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="container">
+                <p>© 2025 设备管理系统 - 版权所有</p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    </body>
+</html>

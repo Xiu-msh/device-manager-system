@@ -1,0 +1,133 @@
+<!-- templates/devices/device_return.html -->
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="row mb-4">
+            <div class="col">
+                <h2>归还设备</h2>
+            </div>
+        </div>
+
+        <!-- 借用信息卡片 -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">借用信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- 左侧信息列 -->
+                            <div class="col-md-6">
+                                <p><strong>设备编号:</strong> {{ record.device.device_number }}</p>
+                                <p><strong>设备名称:</strong> {{ record.device.brand }} {{ record.device.model }}</p>
+                                <p><strong>借用日期:</strong> {{ record.borrow_date|date:"Y-m-d H:i" }}</p>
+                            </div>
+                            <!-- 右侧信息列 -->
+                            <div class="col-md-6">
+                                <p><strong>预计归还日期:</strong> {{ record.estimated_return_date|date:"Y-m-d H:i" }}</p>
+                                <p><strong>当前状态:</strong>
+                                    {% if record.is_overdue %}
+                                    <span class="badge bg-danger status-badge">已逾期</span>
+                                    {% else %}
+                                    <span class="badge bg-info status-badge">借用中</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 归还表单 -->
+        <div class="row">
+            <div class="col">
+                <form method="post" class="mb-4" id="returnForm">
+                    {% csrf_token %}
+
+                    <!-- 确认归还复选框 -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.confirmation|add_class:"form-check-input" }}
+                            <label class="form-check-label" for="{{ form.confirmation.id_for_label }}">
+                                我确认归还该设备。
+                            </label>
+                        </div>
+                        {% if form.confirmation.errors %}
+                        <div class="text-danger">{{ form.confirmation.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 设备是否异常单选框 -->
+                    <div class="mb-3">
+                        <label class="form-label">设备使用过程中是否出现异常</label>
+                        <div class="d-flex flex-row">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" name="has_issue" id="has_issue_no" value="no"
+                                       checked>
+                                <label class="form-check-label" for="has_issue_no">否</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="has_issue" id="has_issue_yes"
+                                       value="yes">
+                                <label class="form-check-label" for="has_issue_yes">是</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备异常描述字段 -->
+                    <div id="issue_description_container" style="display: none;">
+                        <div class="mb-3">
+                            <!--  <label for="id_issue_description" class="form-label">异常描述</label>-->
+                            <textarea
+                                    id="id_issue_description"
+                                    name="{{ form.issue_description.html_name }}"
+                                    class="form-control"
+                                    rows="3"
+                            >{{ form.issue_description.value|default:'' }}</textarea>
+                            <small class="form-text text-muted">请详细描述设备出现的异常情况，例如设备故障现象、发生时间等。</small>
+                            {% if form.issue_description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.issue_description.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 表单操作按钮 -->
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">确认归还</button>
+                        <a href="{% url 'home' %}" class="btn btn-secondary ms-3">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 错误提示模态框 -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">输入错误</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">请填写必要信息</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--调用信息错误弹框js-->
+    <script src="{% static 'js/device_return.js' %}"></script>
+
+{% endblock %}

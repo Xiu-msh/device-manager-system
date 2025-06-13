@@ -1,0 +1,55 @@
+<!-- templates/devices/home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">我的借用设备</h2>
+        {% if borrow_records %}
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th>设备编号</th>
+                        <th>设备名称</th>
+                        <th>借用日期</th>
+                        <th>预计归还日期</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in borrow_records %}
+                    <tr>
+                        <td>{{ record.device.device_number }}</td>
+                        <td>{{ record.device.brand }} {{ record.device.model }}</td>
+                        <td>{{ record.borrow_date|date:"Y-m-d H:i" }}</td>
+                        <td>{{ record.estimated_return_date|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            {% if record.is_overdue %}
+                            <span class="badge bg-danger status-badge">已逾期</span>
+                            {% else %}
+                            <span class="badge bg-success status-badge">{{ record.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'device_return' record.id %}"
+                               class="btn btn-sm btn-primary"
+                               title="点击归还此设备">归还</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            你当前没有借用任何设备。
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

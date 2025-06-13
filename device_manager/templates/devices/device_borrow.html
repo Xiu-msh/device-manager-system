@@ -1,0 +1,43 @@
+<!-- templates/devices/device_borrow.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 class="mb-4">借用设备</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>设备信息</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>设备编号:</strong> {{ device.device_number }}</p>
+                    <p><strong>设备大类型:</strong> {{ device.device_type.name }}</p>
+                    <p><strong>设备类型:</strong> {{ device.type }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>品牌/型号:</strong> {{ device.brand }} {{ device.model }}</p>
+                    <p><strong>当前状态:</strong> <span class="badge bg-success">{{ device.get_status_display }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.estimated_return_date.id_for_label }}">预计归还日期</label>
+            <!-- 添加 min 属性，设置最小值为当前时间 -->
+            <input type="datetime-local" id="{{ form.estimated_return_date.id_for_label }}"
+                   name="{{ form.estimated_return_date.html_name }}"
+                   min="{% now 'Y-m-d\TH:i' %}" value="{{ form.estimated_return_date.value|default:'' }} "
+                   class="custom-datetime-input" required>  <!-- 添加自定义 CSS 类 -->
+            {% if form.estimated_return_date.errors %}
+            <div class="text-danger">{{ form.estimated_return_date.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">确认借用</button>
+        <a href="{% url 'device_query' %}" class="btn btn-secondary mt-3">取消</a>
+    </form>
+
+{% endblock %}
