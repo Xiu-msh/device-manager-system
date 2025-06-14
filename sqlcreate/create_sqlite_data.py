@@ -50,7 +50,7 @@ if __name__ == '__main__':
     excel_file = pd.ExcelFile('device.xlsx')
 
     # 创建SQLite数据库连接
-    conn = sqlite3.connect(r'E:\Code\device_management_system\device_manager\db.sqlite3')
+    conn = sqlite3.connect(r'/device_manager/db.sqlite3')
     cursor = conn.cursor()
 
     try:
