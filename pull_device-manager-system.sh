@@ -5,8 +5,16 @@ LOG_FILE="/home/shin/tasks/pull_device-manager-system_log.txt"
 
 echo "=== $(date) ===" >> "$LOG_FILE"
 
-# 拉取代码前记录当前提交ID
+# 检查项目目录
 cd "$PROJECT_DIR" || { echo "错误：无法进入项目目录！" >> "$LOG_FILE"; exit 1; }
+
+# 检查虚拟环境
+if [ ! -d "$PROJECT_DIR/venv" ]; then
+    echo "错误：虚拟环境不存在！" >> "$LOG_FILE"
+    exit 1
+fi
+
+# 拉取代码前记录提交ID
 OLD_COMMIT=$(git rev-parse HEAD)
 
 # 拉取最新代码
@@ -27,17 +35,21 @@ fi
 
 echo "检测到代码更新，开始部署..." >> "$LOG_FILE"
 
-# 激活虚拟环境并安装依赖（使用www-data权限）
+# 安装依赖（无密码sudo需提前配置）
 echo "正在更新依赖..." >> "$LOG_FILE"
-sudo -u www-data "$PROJECT_DIR/venv/bin/pip" install -r requirements.txt >> "$LOG_FILE" 2>&1
+sudo -u www-data "$PROJECT_DIR/venv/bin/pip" install --upgrade -r requirements.txt >> "$LOG_FILE" 2>&1
 if [ $? -ne 0 ]; then
     echo "错误：安装依赖失败！" >> "$LOG_FILE"
     exit 1
 fi
 
-# 收集静态文件（使用www-data权限）
+# 收集静态文件（无密码sudo需提前配置）
 echo "正在收集静态文件..." >> "$LOG_FILE"
 sudo -u www-data "$PROJECT_DIR/venv/bin/python" "$PROJECT_DIR/manage.py" collectstatic --noinput >> "$LOG_FILE" 2>&1
+if [ $? -ne 0 ]; then
+    echo "错误：收集静态文件失败！" >> "$LOG_FILE"
+    exit 1
+fi
 
 # 重启gunicorn服务
 echo "正在重启gunicorn服务..." >> "$LOG_FILE"
@@ -47,7 +59,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 重启Nginx服务（修复了原脚本中的语法错误）
+# 重启Nginx服务
 echo "正在重启Nginx服务..." >> "$LOG_FILE"
 sudo systemctl restart nginx >> "$LOG_FILE" 2>&1
 if [ $? -ne 0 ]; then

@@ -12,6 +12,7 @@ from .forms import (UserRegistrationForm, UserLoginForm, DeviceQueryForm,
 from django.templatetags.static import static
 import json
 import os
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 def home(request):
@@ -42,17 +43,21 @@ def user_register(request):
 
 def user_login(request):
     """用户登录视图"""
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             messages.success(request, '登录成功！')
-            return redirect('home')  # 替换为你的主页 URL 名称
+            return redirect('home')
         else:
-            messages.error(request, '登录失败，请检查用户名和密码。')
+            messages.error(request, form.errors.get('__all__', ['登录失败，请检查用户名和密码。'])[0])
+    else:
+        form = AuthenticationForm()
 
-    form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
 
