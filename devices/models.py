@@ -26,6 +26,16 @@ class Device(models.Model):
         ('damaged', '已损坏'),
     )
 
+    def get_status_badge_class(self):
+        """获取设备状态对应的徽章类名"""
+        status_classes = {
+            'ok': 'bg-success',
+            'borrowed': 'bg-info',
+            'maintenance': 'bg-warning',
+            'damaged': 'bg-danger',
+        }
+        return status_classes.get(self.status, '')
+
     device_type = models.ForeignKey(DeviceType, on_delete=models.CASCADE, verbose_name="设备大类型")
     device_number = models.CharField(max_length=50, unique=True, verbose_name="设备编号")
     type = models.CharField(max_length=50, verbose_name="设备类型")

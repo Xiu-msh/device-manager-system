@@ -87,17 +87,13 @@
                         {% if device.status == 'borrowed' %}
                         <!-- 添加 data-bs-toggle 和 data-bs-target 属性触发模态框 -->
                         <button type="button"
-                                class="badge bg-info status-badge border-0"
+                                class="badge {{ device.get_status_badge_class }} status-badge border-0"
                                 data-bs-toggle="modal"
                                 data-bs-target="#borrowModal{{ device.id }}">
-                            已借出
+                            {{ device.get_status_display }}
                         </button>
-                        {% elif device.status == 'ok' %}
-                        <span class="badge bg-success status-badge">正常</span>
-                        {% elif device.status == 'maintenance' %}
-                        <span class="badge bg-warning status-badge">维修中</span>
-                        {% elif device.status == 'damaged' %}
-                        <span class="badge bg-danger status-badge">已损坏</span>
+                        {% else %}
+                        <span class="badge {{ device.get_status_badge_class }} status-badge">{{ device.get_status_display }}</span>
                         {% endif %}
                     </td>
                     <td>

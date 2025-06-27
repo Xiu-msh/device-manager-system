@@ -17,7 +17,6 @@ class UserRegistrationForm(UserCreationForm):
 
 class UserLoginForm(AuthenticationForm):
     """用户登录表单"""
-    """此处有问题，后端验证表单出问题,当前在views直接通过AuthenticationForm验证"""
     username = forms.CharField(label='用户名')
     password = forms.CharField(label='密码', widget=forms.PasswordInput)
 

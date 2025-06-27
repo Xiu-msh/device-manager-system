@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-md-6">
                     <p><strong>品牌/型号:</strong> {{ device.brand }} {{ device.model }}</p>
-                    <p><strong>当前状态:</strong> <span class="badge bg-success">{{ device.get_status_display }}</span></p>
+                    <p><strong>当前状态:</strong> <span class="badge {{ device.get_status_badge_class }}">{{ device.get_status_display }}</span></p>
                 </div>
             </div>
         </div>
