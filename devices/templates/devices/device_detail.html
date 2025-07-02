@@ -27,11 +27,15 @@
                                     <span class="fw-bold text-primary">{{ info.verbose_name }}:</span>
                                     {% if key == 'image' %}
                                     <!-- 显示设备图片 -->
-                                    <div class="col-md-12 d-flex flex-column align-items-start">
-                                        <img src="{{ info.value }}" class="img-fluid mt-2">
-                                    </div>
+                                        <div class="col-md-12 d-flex flex-column align-items-start">
+                                            <img src="{{ info.value }}" class="img-fluid mt-2">
+                                        </div>
                                     {% else %}
-                                        <span class="text-muted">{{ info.value }}</span>
+                                        {% if key == 'status' %}
+                                            <span class="badge {{ device_info.device.get_status_badge_class }}">{{ info.value }}</span>
+                                        {% else %}
+                                            <span class="text-muted">{{ info.value }}</span>
+                                        {% endif %}
                                     {% endif %}
                                 </li>
                                 {% endif %}
